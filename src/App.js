@@ -1,10 +1,11 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
-
 import gsap from "gsap";
-import {Power2} from "gsap/gsap-core";
+import { Power2 } from "gsap/gsap-core";
 
 import './App.css';
 import svg from './assets/exit.svg';
+
+import classNames from 'classnames';
 
 function App() {
     const menuBtnRef = useRef(null);
@@ -45,30 +46,20 @@ function App() {
         t1Ref.current.reverse();
     }, []);
 
-    useEffect(() => {
-        menuBtnRef.current.addEventListener("click", handleMenuBtnClick);
-        exitBtnRef.current.addEventListener("click", handleExitBtnClick);
-
-        return () => {
-            menuBtnRef.current.removeEventListener("click", handleMenuBtnClick);
-            exitBtnRef.current.removeEventListener("click", handleExitBtnClick);
-        };
-    }, [handleMenuBtnClick, handleExitBtnClick]);
-
     return (
-        <>
+        <div className={classNames('app', { 'menu-open': isMenuOpen })}>
             <div className="home">
                 <div className="container">
                     <div className="logo">Logo</div>
                 </div>
                 <div className="container">
-                    <div className="menu-div" ref={menuBtnRef}>Menu</div>
+                    <div className="menu-div" ref={menuBtnRef} onClick={handleMenuBtnClick}>Menu</div>
                 </div>
             </div>
 
             <div className="menu">
                 <div className="background">Menu</div>
-                <div className="exit" ref={exitBtnRef}><img src={svg} alt="" srcSet=""/></div>
+                <div className="exit" ref={exitBtnRef} onClick={handleExitBtnClick}><img src={svg} alt="" srcSet=""/></div>
 
                 <div className="menu-container">
                     <ul className="options">
@@ -114,7 +105,7 @@ function App() {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 
