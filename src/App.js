@@ -1,4 +1,4 @@
-import {useRef, useEffect} from 'react';
+import { useRef, useEffect, useCallback, useState } from 'react';
 
 import gsap from "gsap";
 import {Power2} from "gsap/gsap-core";
@@ -9,16 +9,19 @@ import svg from './assets/exit.svg';
 function App() {
     const menuBtnRef = useRef(null);
     const exitBtnRef = useRef(null);
-    let t1 = gsap.timeline({paused: true});
+    const t1Ref = useRef(null);
+
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
-        t1.to(".menu", {
+        t1Ref.current = gsap.timeline({ paused: true });
+        t1Ref.current.to(".menu", {
             opacity: 1,
             duration: 1,
             top: 0,
             ease: Power2.easeInOut
         });
-        t1.to(
+        t1Ref.current.to(
             ".nav",
             {
                 opacity: 1,
@@ -29,15 +32,28 @@ function App() {
             },
             ">-0.5"
         );
-        menuBtnRef.current.addEventListener("click", () => {
-            t1.play().timeScale(1);
-        });
-
-        exitBtnRef.current.addEventListener("click", () => {
-            t1.timeScale(2.5);
-            t1.reverse();
-        });
     }, []);
+
+    const handleMenuBtnClick = useCallback(() => {
+        setIsMenuOpen(true);
+        t1Ref.current.play().timeScale(1);
+    }, []);
+
+    const handleExitBtnClick = useCallback(() => {
+        setIsMenuOpen(false);
+        t1Ref.current.timeScale(2.5);
+        t1Ref.current.reverse();
+    }, []);
+
+    useEffect(() => {
+        menuBtnRef.current.addEventListener("click", handleMenuBtnClick);
+        exitBtnRef.current.addEventListener("click", handleExitBtnClick);
+
+        return () => {
+            menuBtnRef.current.removeEventListener("click", handleMenuBtnClick);
+            exitBtnRef.current.removeEventListener("click", handleExitBtnClick);
+        };
+    }, [handleMenuBtnClick, handleExitBtnClick]);
 
     return (
         <>
